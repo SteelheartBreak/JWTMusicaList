@@ -58,6 +58,27 @@ public class UserController {
         return new ResponseEntity<String>(token, HttpStatus.OK);
     }
 
+    @GetMapping("/details")
+    public ResponseEntity<UserEntity> buscarUser(){
+    
+        // Obtener el correo del usuario autenticado
+        String correo = SecurityContextHolder.getContext().getAuthentication().getName();
+    
+        // Buscar el usuario por correo
+        Optional<UserEntity> userOptional = userRepository.findByCorreo(correo);
+    
+        // Verificar si el Optional contiene un valor (usuario)
+        if (!userOptional.isPresent()) {
+            // Si no se encuentra el usuario, devuelve una respuesta con HttpStatus.NOT_FOUND
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    
+        // Si se encuentra el usuario, extraer el valor de Optional y devolverlo en la respuesta
+        UserEntity user = userOptional.get();
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+    
+
     @Operation(summary = "Agregar un Usuario")
     @PostMapping("/add")
     public ResponseEntity agregar(@RequestBody UserEntity user) {
